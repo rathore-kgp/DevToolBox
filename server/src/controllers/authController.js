@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const crypto = require('crpto');
+const crypto = require('crypto');
 
 // Helper : Send token response with HttpOnly cookie for refresh token
 const sendTokenResponse = async (user, statusCode, res) => {
@@ -17,7 +17,7 @@ const sendTokenResponse = async (user, statusCode, res) => {
         user.refreshTokens = user.refreshTokens.slice(-5);
     }
 
-    await user.save({ validatteBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     const cookieOptions = {
         httpOnly: true,  //XSS protection
@@ -33,7 +33,7 @@ const sendTokenResponse = async (user, statusCode, res) => {
             success: true,
             accessToken,
             user: {
-                id: user_id,
+                id: user.id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
@@ -51,7 +51,7 @@ const register = async (req, res) => {
 
     if (existingUser) {
         const field = existingUser.email == email ? 'email' : 'username';
-        const error = new Error('An account with that ${field} already exists. ');
+        const error = new Error(`An account with that ${field} already exists.`);
 
         error.statusCode = 409;
         throw error;
@@ -62,6 +62,28 @@ const register = async (req, res) => {
     await sendTokenResponse(user, 201, res);
 };
 
+// @route   POST /api/auth/login
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    const error = new Error('Please provide email and password.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Must explicitly select password since `select: false` in schema
+  const user = await User.findOne({ email }).select('+password +refreshTokens');
+
+  if (!user || !(await user.matchPassword(password))) {
+    // Deliberate vague message — don't reveal which field is wrong
+    const error = new Error('Invalid credentials.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  await sendTokenResponse(user, 200, res);
+};
 
 // @route POST/api/auth/refresh
 const refreshToken = async (req, res) => {
@@ -117,7 +139,7 @@ const logout = async (req, res) => {
         const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
         const user = await User.findById(req.user.id).select('+refreshTokens');
         if (user) {
-            user.refreshTokens = user.refreshTokens.filter(t => t != hasedToken);
+            user.refreshTokens = user.refreshTokens.filter(t => t != hashedToken);
             await user.save({ validateBeforeSave: false });
         }
     }

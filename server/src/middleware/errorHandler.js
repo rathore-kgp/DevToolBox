@@ -6,7 +6,7 @@ const errorHandler = (err, req, res, next) => {
 
     //Mongoose Validation Error
     if(err.name === 'ValidationError'){
-        const message = Object.values(err.errors).map(e => e.messages);
+        const messages = Object.values(err.errors).map(e => e.message);
         return res.status(400).json({
             success : false,
             error : "ValidationError",
@@ -39,7 +39,7 @@ const errorHandler = (err, req, res, next) => {
 
 
 const notFound = (req, res, next) => {
-    const error = new Error('Route Not Found: ${req.originalUrl}');
+    const error = new Error(`Route Not Found: ${req.originalUrl}`);
     error.statusCode = 404;
     next(error);
 };

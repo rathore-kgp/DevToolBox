@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+
 require('express-async-errors');  
 
-const { notFound } = require('./middleware/notFound');
-const { errorHandler } = require('./middleware/errorHandler');
+
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 const { routes } = require('./routes/index');
 
 const createApp = () => {
@@ -17,6 +19,7 @@ const createApp = () => {
         credentials: true,
     }));
 
+    app.use(cookieParser());
     app.use(express.json({ limit : '10mb' }));
     app.use(express.urlencoded({ extended : true }));
 
