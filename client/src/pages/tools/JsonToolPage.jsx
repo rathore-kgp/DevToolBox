@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ToolLayout from '../../components/tools/ToolLayout';
 import { useJsonTool } from '../../hooks/useJsonTool';
-import { jsonToCSV, downloadCSV } from '../../utils/jsonToCsv';
+import { jsonToCSV, downloadCSV } from '../../utils/jsonTocsv';
 
 const CopyButton = ({ text, label = 'Copy' }) => {
   const [copied, setCopied] = useState(false);

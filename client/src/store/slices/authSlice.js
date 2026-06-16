@@ -30,6 +30,19 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const checkAuth = createAsyncThunk(
+  'auth/checkAuth',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.post('/auth/refresh');
+      return data; // returns new accessToken + user info
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.error || 'Session expired');
+    }
+  }
+);
+
+
 export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
@@ -106,6 +119,23 @@ const authSlice = createSlice({
     builder.addCase(logoutUser.fulfilled, (state) => {
       Object.assign(state, initialState); // Reset to initial
     });
+
+    // Check Auth
+    builder
+      .addCase(checkAuth.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(checkAuth.rejected, (state, action) => {
+        state.isLoading = false;
+        // Don't set error message on init auth fail since it's normal for logged out users
+      });
   },
 });
 

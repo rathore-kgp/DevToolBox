@@ -1,4 +1,4 @@
-// src/utils/jsonToCsv.js
+// src/utils/jsonTocsv.js
 
 /**
  * Flattens a nested object into dot-notation keys.
