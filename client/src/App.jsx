@@ -12,8 +12,12 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const Layout = lazy(() => import('./components/layout/Layout'));
+
+// Tool pages — all 4 you currently have
 const JsonToolsPage = lazy(() => import('./pages/tools/JsonToolPage'));
 const EncodingToolsPage = lazy(() => import('./pages/tools/EncodingToolsPage'));
+const RegexTesterPage = lazy(() => import('./pages/tools/RegexTesterPage'));
+const JwtToolPage = lazy(() => import('./pages/tools/JwtToolPage'));
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -52,8 +56,17 @@ function AppContent() {
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="tools/json" element={<JsonToolsPage />} />
-            <Route path="tools/encoding" element={<EncodingToolsPage />} />
+
+            {/* Tool routes — paths match toolsRegistry.js exactly */}
+            <Route path="json" element={<JsonToolsPage />} />
+            <Route path="encoding" element={<EncodingToolsPage />} />
+            <Route path="regex" element={<RegexTesterPage />} />
+            <Route path="jwt" element={<JwtToolPage />} />
+
+            {/* Phase 3 & 4 — add later */}
+            {/* <Route path="api-tester" element={<ApiTesterPage />} /> */}
+            {/* <Route path="curl" element={<CurlConverterPage />} /> */}
+            {/* <Route path="collab" element={<CodeRoomPage />} /> */}
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
