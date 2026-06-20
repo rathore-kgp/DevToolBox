@@ -60,7 +60,7 @@ const TOOLS = [
   },
 
     {
-    to: '/tools/api-tester',
+    to: '/api-tester',
     label: 'API Tester',
     description: 'Send HTTP requests with a built-in proxy — like a mini Postman.',
     icon: (
@@ -90,7 +90,7 @@ const TOOLS = [
 ];
 
 const STATS = [
-  { label: 'Tools Available', value: '4', suffix: '+' },
+  { label: 'Tools Available', value: '5', suffix: '+' },
   { label: 'Runs in Browser', value: '100', suffix: '%' },
   { label: 'Data Stored', value: '0', suffix: 'B' },
 ];
@@ -191,7 +191,7 @@ const DashboardPage = () => {
       {/* ─── Footer note ─── */}
       <div className="text-center py-4">
         <p className="text-xs text-[#3d4263]">
-          All processing happens locally in your browser · No data is ever sent to a server
+          Most tools run entirely in your browser · API Tester &amp; JWT verification use a secure backend proxy
         </p>
       </div>
     </div>

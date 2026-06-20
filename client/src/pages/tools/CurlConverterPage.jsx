@@ -1,7 +1,7 @@
-// src/pages/tools/CurlConverterPage.jsx
 import { useState } from 'react';
 import ToolLayout from '../../components/tools/ToolLayout';
 import { convertCurlToCode } from '../../utils/codeGenerators';
+import EmptyState from '../../components/ui/EmptyState';
 
 const SAMPLE_CURL = `curl -X POST 'https://api.example.com/users' \\
   -H 'Content-Type: application/json' \\
@@ -27,6 +27,8 @@ const CurlConverterPage = () => {
   return (
     <ToolLayout title="cURL Converter" description="Transform cURL commands into Axios or Fetch code instantly.">
       <div className="space-y-4">
+
+        {/* Input Card */}
         <div className="card space-y-3">
           <textarea
             value={input}
@@ -36,14 +38,29 @@ const CurlConverterPage = () => {
             spellCheck={false}
           />
           <div className="flex gap-2">
-            <button onClick={handleConvert} className="btn-primary text-sm">Convert</button>
-            <button onClick={() => { setInput(SAMPLE_CURL); setResult(null); }} className="btn-primary text-sm bg-gray-500 hover:bg-gray-600">
+            <button onClick={handleConvert} className="btn-primary text-sm">
+              Convert
+            </button>
+            <button
+              onClick={() => { setInput(SAMPLE_CURL); setResult(null); }}
+              className="btn-primary text-sm bg-gray-500 hover:bg-gray-600"
+            >
               Load Sample
             </button>
           </div>
           {error && <p className="text-red-500 text-sm font-mono">{error}</p>}
         </div>
 
+        {/* Empty State — show when no result yet */}
+        {!result && !error && (
+          <EmptyState
+            icon="↔"
+            title="No cURL command yet"
+            description="Paste a cURL command above and click Convert to generate code."
+          />
+        )}
+
+        {/* Result */}
         {result && (
           <>
             {/* Parsed Summary */}
@@ -79,7 +96,9 @@ const CurlConverterPage = () => {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === tab ? 'bg-white dark:bg-dark-surface shadow-sm text-brand-600' : 'text-gray-500'
+                      activeTab === tab
+                        ? 'bg-white dark:bg-dark-surface shadow-sm text-brand-600'
+                        : 'text-gray-500'
                     }`}
                   >
                     {tab === 'axios' ? 'Axios' : 'Fetch API'}
@@ -98,6 +117,7 @@ const CurlConverterPage = () => {
             </div>
           </>
         )}
+
       </div>
     </ToolLayout>
   );

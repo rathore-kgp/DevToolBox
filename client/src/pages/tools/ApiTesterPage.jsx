@@ -8,6 +8,7 @@ import {
 } from '../../store/slices/apiTesterSlice';
 import KeyValueEditor from '../../components/tools/KeyValueEditor';
 import { getStatusColor, getStatusBg } from '../../utils/statusColors';
+import EmptyState from '../../components/ui/EmptyState';
 
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'];
 
@@ -180,7 +181,14 @@ const ApiTesterPage = () => {
               )}
             </div>
           </div>
-
+{/* Empty state — show when no response yet */}
+{!response && !error && !isLoading && (
+  <EmptyState
+    icon="⚡"
+    title="No request sent yet"
+    description="Enter a URL above and click Send to make your first request."
+  />
+)}
           {/* ── Response Panel ── */}
           {(response || error || isLoading) && (
             <div className="rounded-2xl border border-[#1c1f2e] bg-[#0d0f17]/60 overflow-hidden">

@@ -6,20 +6,14 @@ import apiTesterReducer from './slices/apiTesterSlice';
 export const store = configureStore({
     reducer: {
         auth: authReducer,
-        ui: uiReducer
+        ui: uiReducer,
+        apiTester: apiTesterReducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: {
             // Ignore these action types (they may contain non-serializable data)
             ignoredActions: ['auth/login/fulfilled', 'auth/checkAuth/fulfilled', 'auth/register/fulfilled'],
         },
-    }), 
+    }),
     devTools: import.meta.env.MODE !== 'production',
-});
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    ui: uiReducer,
-    apiTester: apiTesterReducer, // add this line
-  },
 });

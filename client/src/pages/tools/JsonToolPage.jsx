@@ -90,7 +90,6 @@ const JsonToolsPage = () => {
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
-              if (e.target.value) formatJSON(e.target.value);
             }}
           />
 
