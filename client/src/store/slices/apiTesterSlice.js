@@ -83,6 +83,7 @@ const apiTesterSlice = createSlice({
       .addCase(sendProxyRequest.rejected, (state, { payload }) => {
         state.isLoading = false;
         state.error = payload;
+        state.response = null; // make sure response is cleared on error
       });
 
     // Fetch collections ── NEW ──
