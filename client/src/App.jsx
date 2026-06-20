@@ -5,6 +5,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoadingSpinner from './components/ui/LoadingSpinner';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import { checkAuth } from './store/slices/authSlice';
 
 // Lazy loaded pages — code splitting starts here
@@ -21,7 +22,6 @@ const JwtToolPage = lazy(() => import('./pages/tools/JwtToolPage'));
 
 // Add with other lazy imports at top
 const ApiTesterPage = lazy(() => import('./pages/tools/ApiTesterPage'));
-
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -62,13 +62,23 @@ function AppContent() {
             <Route path="dashboard" element={<DashboardPage />} />
 
             {/* Tool routes — paths match toolsRegistry.js exactly */}
-            <Route path="json" element={<JsonToolsPage />} />
-            <Route path="encoding" element={<EncodingToolsPage />} />
-            <Route path="regex" element={<RegexTesterPage />} />
-            <Route path="jwt" element={<JwtToolPage />} />
+            <Route path="json" element={
+              <ErrorBoundary><JsonToolsPage /></ErrorBoundary>
+            } />
+            <Route path="encoding" element={
+              <ErrorBoundary><EncodingToolsPage /></ErrorBoundary>
+            } />
+            <Route path="regex" element={
+              <ErrorBoundary><RegexTesterPage /></ErrorBoundary>
+            } />
+            <Route path="jwt" element={
+              <ErrorBoundary><JwtToolPage /></ErrorBoundary>
+            } />
 
-            {/* Phase 3 & 4 — add later */}
-            <Route path="api-tester" element={<ApiTesterPage />} />
+            {/* Phase 3 */}
+            <Route path="api-tester" element={
+              <ErrorBoundary><ApiTesterPage /></ErrorBoundary>
+            } />
             {/* <Route path="curl" element={<CurlConverterPage />} /> */}
             {/* <Route path="collab" element={<CodeRoomPage />} /> */}
           </Route>
