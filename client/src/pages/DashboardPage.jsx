@@ -115,8 +115,9 @@ const DashboardPage = () => {
             Welcome to DevToolBox
           </h1>
           <p className="text-[#6e758f] text-lg max-w-xl leading-relaxed">
-            A collection of powerful developer utilities running entirely in your browser.
-            No uploads, no tracking — just tools.
+            A collection of powerful developer utilities. Most tools run entirely
+            in your browser — no uploads, no tracking. Some features use a secure
+            backend proxy.
           </p>
 
           <div className="flex items-center gap-6 mt-6">

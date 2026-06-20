@@ -22,6 +22,7 @@ const JwtToolPage = lazy(() => import('./pages/tools/JwtToolPage'));
 
 // Add with other lazy imports at top
 const ApiTesterPage = lazy(() => import('./pages/tools/ApiTesterPage'));
+const CurlConverterPage = lazy(() => import('./pages/tools/CurlConverterPage'));
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -79,7 +80,9 @@ function AppContent() {
             <Route path="api-tester" element={
               <ErrorBoundary><ApiTesterPage /></ErrorBoundary>
             } />
-            {/* <Route path="curl" element={<CurlConverterPage />} /> */}
+            <Route path="curl" element={
+              <ErrorBoundary><CurlConverterPage /></ErrorBoundary>
+            } />
             {/* <Route path="collab" element={<CodeRoomPage />} /> */}
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

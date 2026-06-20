@@ -181,14 +181,16 @@ const ApiTesterPage = () => {
               )}
             </div>
           </div>
-{/* Empty state — show when no response yet */}
-{!response && !error && !isLoading && (
-  <EmptyState
-    icon="⚡"
-    title="No request sent yet"
-    description="Enter a URL above and click Send to make your first request."
-  />
-)}
+
+          {/* Empty state — show when no response yet */}
+          {!response && !error && !isLoading && (
+            <EmptyState
+              icon="⚡"
+              title="No request sent yet"
+              description="Enter a URL above and click Send to make your first request."
+            />
+          )}
+
           {/* ── Response Panel ── */}
           {(response || error || isLoading) && (
             <div className="rounded-2xl border border-[#1c1f2e] bg-[#0d0f17]/60 overflow-hidden">
