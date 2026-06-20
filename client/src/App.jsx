@@ -19,6 +19,10 @@ const EncodingToolsPage = lazy(() => import('./pages/tools/EncodingToolsPage'));
 const RegexTesterPage = lazy(() => import('./pages/tools/RegexTesterPage'));
 const JwtToolPage = lazy(() => import('./pages/tools/JwtToolPage'));
 
+// Add with other lazy imports at top
+const ApiTesterPage = lazy(() => import('./pages/tools/ApiTesterPage'));
+
+
 function AppContent() {
   const dispatch = useDispatch();
   const [isInitializing, setIsInitializing] = useState(true);
@@ -64,7 +68,7 @@ function AppContent() {
             <Route path="jwt" element={<JwtToolPage />} />
 
             {/* Phase 3 & 4 — add later */}
-            {/* <Route path="api-tester" element={<ApiTesterPage />} /> */}
+            <Route path="api-tester" element={<ApiTesterPage />} />
             {/* <Route path="curl" element={<CurlConverterPage />} /> */}
             {/* <Route path="collab" element={<CodeRoomPage />} /> */}
           </Route>
