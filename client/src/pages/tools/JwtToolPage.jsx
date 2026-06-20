@@ -6,7 +6,7 @@ import axiosInstance from '../../services/axiosInstance';
 const SAMPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
 const JSONDisplay = ({ data }) => (
-  <pre className="bg-gray-50 dark:bg-dark-bg p-4 rounded-lg font-mono text-sm overflow-auto whitespace-pre-wrap">
+  <pre className="bg-[#080a0f] p-4 rounded-lg font-mono text-sm overflow-auto whitespace-pre-wrap text-[#9099b5] border border-[#1c1f2e]">
     {JSON.stringify(data, null, 2)}
   </pre>
 );
@@ -63,7 +63,7 @@ const JwtToolPage = () => {
             <button onClick={handleDecode} className="btn-primary text-sm">Decode (Client-Side)</button>
             <button onClick={() => setToken(SAMPLE_JWT)} className="btn-primary text-sm bg-gray-500 hover:bg-gray-600">Load Sample</button>
           </div>
-          {decodeError && <p className="text-red-500 text-sm font-mono">{decodeError}</p>}
+          {decodeError && <p className="text-[#f87171] text-sm font-mono bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] p-3 rounded-lg">{decodeError}</p>}
         </div>
 
         {decoded && (
@@ -71,7 +71,7 @@ const JwtToolPage = () => {
             <div className="card space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm text-pink-500">Header</h3>
-                <span className="text-xs bg-gray-100 dark:bg-dark-bg px-2 py-0.5 rounded font-mono">{decoded.header.alg}</span>
+                <span className="text-xs bg-[#1c1f2e] px-2 py-0.5 rounded font-mono text-[#9099b5]">{decoded.header.alg}</span>
               </div>
               <JSONDisplay data={decoded.header} />
             </div>
@@ -88,15 +88,15 @@ const JwtToolPage = () => {
               </div>
               <JSONDisplay data={decoded.payload} />
               {decoded.expiresAt && (
-                <p className="text-xs text-gray-500">Expires: {decoded.expiresAt}</p>
+                <p className="text-xs text-[#6e758f]">Expires: {decoded.expiresAt}</p>
               )}
             </div>
             <div className="card space-y-2">
               <h3 className="font-semibold text-sm text-cyan-500">Signature</h3>
-              <p className="font-mono text-xs break-all text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-dark-bg p-3 rounded">
+              <p className="font-mono text-xs break-all text-[#9099b5] bg-[#080a0f] border border-[#1c1f2e] p-3 rounded">
                 {decoded.signature}
               </p>
-              <p className="text-xs text-gray-500">Signature verification requires the secret (see below)</p>
+              <p className="text-xs text-[#6e758f]">Signature verification requires the secret (see below)</p>
             </div>
           </div>
         )}
@@ -104,7 +104,7 @@ const JwtToolPage = () => {
         {/* Signature Verification */}
         <div className="card space-y-3">
           <h3 className="font-semibold text-sm">Signature Verification (Server-Side)</h3>
-          <p className="text-xs text-gray-500">Your secret is sent to our backend over HTTPS and never logged or stored.</p>
+          <p className="text-xs text-[#6e758f]">Your secret is sent to our backend over HTTPS and never logged or stored.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-2">
               <input

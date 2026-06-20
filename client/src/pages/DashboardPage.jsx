@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 const TOOLS = [
   {
-    to: '/tools/json',
+    to: '/json',
     label: 'JSON Tools',
     description: 'Format, validate, minify & export JSON data instantly.',
     icon: (
@@ -17,7 +17,7 @@ const TOOLS = [
     badgeClass: 'badge-green',
   },
   {
-    to: '/tools/encoding',
+    to: '/encoding',
     label: 'Encoding Tools',
     description: 'Base64 encode/decode, hash generation (SHA-1/256/512), and UUID generation.',
     icon: (
@@ -31,7 +31,7 @@ const TOOLS = [
     badgeClass: 'badge-green',
   },
   {
-    to: '#',
+    to: '/regex',
     label: 'Regex Tester',
     description: 'Test and debug regular expressions with real-time match highlighting.',
     icon: (
@@ -41,8 +41,22 @@ const TOOLS = [
     ),
     gradient: 'from-[#f59e0b] to-[#ec4899]',
     glow: 'rgba(245,158,11,0.15)',
-    badge: 'Coming soon',
-    badgeClass: 'badge-brand',
+    badge: 'Ready',
+    badgeClass: 'badge-green',
+  },
+  {
+    to: '/jwt',
+    label: 'JWT Decoder',
+    description: 'Decode and inspect JWT tokens — header, payload, and signature.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+      </svg>
+    ),
+    gradient: 'from-[#06b6d4] to-[#10b981]',
+    glow: 'rgba(6,182,212,0.15)',
+    badge: 'Ready',
+    badgeClass: 'badge-green',
   },
   {
     to: '#',
@@ -55,20 +69,6 @@ const TOOLS = [
     ),
     gradient: 'from-[#10b981] to-[#06b6d4]',
     glow: 'rgba(16,185,129,0.15)',
-    badge: 'Coming soon',
-    badgeClass: 'badge-brand',
-  },
-  {
-    to: '#',
-    label: 'JWT Decoder',
-    description: 'Decode and inspect JWT tokens — header, payload, and signature.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-      </svg>
-    ),
-    gradient: 'from-[#06b6d4] to-[#10b981]',
-    glow: 'rgba(6,182,212,0.15)',
     badge: 'Coming soon',
     badgeClass: 'badge-brand',
   },
@@ -89,7 +89,7 @@ const TOOLS = [
 ];
 
 const STATS = [
-  { label: 'Tools Available', value: '2', suffix: '+' },
+  { label: 'Tools Available', value: '4', suffix: '+' },
   { label: 'Runs in Browser', value: '100', suffix: '%' },
   { label: 'Data Stored', value: '0', suffix: 'B' },
 ];
