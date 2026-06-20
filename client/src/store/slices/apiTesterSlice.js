@@ -13,6 +13,31 @@ export const sendProxyRequest = createAsyncThunk(
   }
 );
 
+// ── NEW ──
+export const fetchCollections = createAsyncThunk(
+  'apiTester/fetchCollections',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.get('/tools/collections');
+      return data;
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.error || 'Failed to fetch collections');
+    }
+  }
+);
+
+export const saveCollection = createAsyncThunk(
+  'apiTester/saveCollection',
+  async (collection, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosInstance.post('/tools/collections', collection);
+      return data;
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.error || 'Failed to save collection');
+    }
+  }
+);
+
 const apiTesterSlice = createSlice({
   name: 'apiTester',
   initialState: {
@@ -23,20 +48,28 @@ const apiTesterSlice = createSlice({
     response: null,
     isLoading: false,
     error: null,
+    collections: [],        // ── NEW ──
+    collectionsLoading: false, // ── NEW ──
   },
   reducers: {
     setUrl: (state, { payload }) => { state.url = payload; },
     setMethod: (state, { payload }) => { state.method = payload; },
     setHeaders: (state, { payload }) => { state.headers = payload; },
     setBody: (state, { payload }) => { state.body = payload; },
+    clearResponse: (state) => {   // ── NEW ──
+      state.response = null;
+      state.error = null;
+    },
     loadRequest: (state, { payload }) => {
       state.url = payload.url;
       state.method = payload.method;
-      state.headers = Object.entries(payload.headers || {}).map(([k, v]) => ({ key: k, value: v, enabled: true }));
+      state.headers = Object.entries(payload.headers || {})
+        .map(([k, v]) => ({ key: k, value: v, enabled: true }));
       state.body = payload.body || '';
     },
   },
   extraReducers: (builder) => {
+    // Send proxy request — same as before
     builder
       .addCase(sendProxyRequest.pending, (state) => {
         state.isLoading = true;
@@ -51,8 +84,41 @@ const apiTesterSlice = createSlice({
         state.isLoading = false;
         state.error = payload;
       });
+
+    // Fetch collections ── NEW ──
+    builder
+      .addCase(fetchCollections.pending, (state) => {
+        state.collectionsLoading = true;
+      })
+      .addCase(fetchCollections.fulfilled, (state, { payload }) => {
+        state.collectionsLoading = false;
+        state.collections = payload.data || [];
+      })
+      .addCase(fetchCollections.rejected, (state) => {
+        state.collectionsLoading = false;
+      });
+
+    // Save collection ── NEW ──
+    builder.addCase(saveCollection.fulfilled, (state, { payload }) => {
+      state.collections.push(payload.data);
+    });
   },
 });
 
-export const { setUrl, setMethod, setHeaders, setBody, loadRequest } = apiTesterSlice.actions;
+export const {
+  setUrl, setMethod, setHeaders,
+  setBody, clearResponse, loadRequest
+} = apiTesterSlice.actions;
+
 export default apiTesterSlice.reducer;
+
+// Selectors
+export const selectUrl = (state) => state.apiTester.url;
+export const selectMethod = (state) => state.apiTester.method;
+export const selectHeaders = (state) => state.apiTester.headers;
+export const selectBody = (state) => state.apiTester.body;
+export const selectResponse = (state) => state.apiTester.response;
+export const selectIsLoading = (state) => state.apiTester.isLoading;
+export const selectError = (state) => state.apiTester.error;
+export const selectCollections = (state) => state.apiTester.collections;
+export const selectCollectionsLoading = (state) => state.apiTester.collectionsLoading;

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './slices/authSlice'
 import uiReducer from './slices/uiSlice'
+import apiTesterReducer from './slices/apiTesterSlice';
 
 export const store = configureStore({
     reducer: {
@@ -14,4 +15,11 @@ export const store = configureStore({
         },
     }), 
     devTools: import.meta.env.MODE !== 'production',
+});
+export const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    ui: uiReducer,
+    apiTester: apiTesterReducer, // add this line
+  },
 });
