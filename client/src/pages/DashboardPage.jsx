@@ -59,7 +59,7 @@ const TOOLS = [
     badgeClass: 'badge-green',
   },
 
-    {
+  {
     to: '/api-tester',
     label: 'API Tester',
     description: 'Send HTTP requests with a built-in proxy — like a mini Postman.',
@@ -70,6 +70,20 @@ const TOOLS = [
     ),
     gradient: 'from-[#10b981] to-[#06b6d4]',
     glow: 'rgba(16,185,129,0.15)',
+    badge: 'Ready',
+    badgeClass: 'badge-green',
+  },
+  {
+    to: '/curl',
+    label: 'cURL Converter',
+    description: 'Convert cURL commands into Axios or Fetch code in one click.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    gradient: 'from-[#f59e0b] to-[#ec4899]',
+    glow: 'rgba(245,158,11,0.15)',
     badge: 'Ready',
     badgeClass: 'badge-green',
   },
@@ -90,7 +104,7 @@ const TOOLS = [
 ];
 
 const STATS = [
-  { label: 'Tools Available', value: '5', suffix: '+' },
+  { label: 'Tools Available', value: '6', suffix: '+' },
   { label: 'Runs in Browser', value: '100', suffix: '%' },
   { label: 'Data Stored', value: '0', suffix: 'B' },
 ];

@@ -106,7 +106,6 @@ const parseCurl = (curlString) => {
       case '-L':
       case '--location':
         result.followRedirects = true;
-        i--;
         break;
     }
 
