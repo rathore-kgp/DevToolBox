@@ -14,15 +14,14 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const Layout = lazy(() => import('./components/layout/Layout'));
 
-// Tool pages — 6 tools total
+// Tool pages — 6 tools + Code Room
 const JsonToolsPage = lazy(() => import('./pages/tools/JsonToolPage'));
 const EncodingToolsPage = lazy(() => import('./pages/tools/EncodingToolsPage'));
 const RegexTesterPage = lazy(() => import('./pages/tools/RegexTesterPage'));
 const JwtToolPage = lazy(() => import('./pages/tools/JwtToolPage'));
-
-// Add with other lazy imports at top
 const ApiTesterPage = lazy(() => import('./pages/tools/ApiTesterPage'));
 const CurlConverterPage = lazy(() => import('./pages/tools/CurlConverterPage'));
+const CodeRoomPage = lazy(() => import('./pages/tools/CodeRoomPage'));
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -83,7 +82,9 @@ function AppContent() {
             <Route path="curl" element={
               <ErrorBoundary><CurlConverterPage /></ErrorBoundary>
             } />
-            {/* <Route path="collab" element={<CodeRoomPage />} /> */}
+            <Route path="collab" element={
+              <ErrorBoundary><CodeRoomPage /></ErrorBoundary>
+            } />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

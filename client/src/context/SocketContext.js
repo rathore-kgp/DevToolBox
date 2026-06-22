@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
     if (!accessToken) return;
 
     // Establish connection with auth token
-    socketRef.current = io(process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000', {
+    socketRef.current = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000', {
       auth: { token: accessToken },
       autoConnect: true,
       reconnectionDelay: 1000,

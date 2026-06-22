@@ -88,6 +88,20 @@ const TOOLS = [
     badgeClass: 'badge-green',
   },
   {
+    to: '/collab',
+    label: 'Code Room',
+    description: 'Real-time collaborative code editor — share a Room ID and code together live.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+    gradient: 'from-[#7c3aed] to-[#10b981]',
+    glow: 'rgba(124,58,237,0.15)',
+    badge: 'Ready',
+    badgeClass: 'badge-green',
+  },
+  {
     to: '#',
     label: 'URL Tools',
     description: 'Encode, decode, and parse URLs and query parameters.',
@@ -104,7 +118,7 @@ const TOOLS = [
 ];
 
 const STATS = [
-  { label: 'Tools Available', value: '6', suffix: '+' },
+  { label: 'Tools Available', value: '7', suffix: '+' },
   { label: 'Runs in Browser', value: '100', suffix: '%' },
   { label: 'Data Stored', value: '0', suffix: 'B' },
 ];
