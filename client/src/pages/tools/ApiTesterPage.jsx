@@ -42,6 +42,11 @@ const ApiTesterPage = () => {
     dispatch(fetchCollections());
   }, [dispatch]);
 
+  // NEW: Memoized handler for KeyValueEditor to prevent re-renders
+  const handleHeadersChange = useCallback((pairs) => {
+    dispatch(setHeaders(pairs));
+  }, [dispatch]);
+
   const handleSend = useCallback(() => {
     const enabledHeaders = headers
       .filter(h => h.enabled && h.key)
@@ -158,7 +163,7 @@ const ApiTesterPage = () => {
               {activeTab === 'headers' && (
                 <KeyValueEditor
                   pairs={headers}
-                  onChange={(pairs) => dispatch(setHeaders(pairs))}
+                  onChange={handleHeadersChange} // UPDATED: Now uses the stable function reference
                   placeholder="Header"
                 />
               )}
