@@ -56,4 +56,7 @@ const KeyValueEditor = memo(({ pairs, onChange, placeholder = 'Key' }) => {
   );
 });
 
+// Explicitly set the display name for React DevTools
+KeyValueEditor.displayName = 'KeyValueEditor';
+
 export default KeyValueEditor;
