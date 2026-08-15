@@ -13,35 +13,38 @@ const KeyValueEditor = memo(({ pairs, onChange, placeholder = 'Key' }) => {
   return (
     <div className="space-y-2">
       {pairs.map((pair, i) => (
-        <div key={i} className="flex gap-2 items-center">
+        <div key={i} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
           {/* Enable/Disable toggle */}
           <input
             type="checkbox"
             checked={pair.enabled}
             onChange={e => updateRow(i, 'enabled', e.target.checked)}
-            className="w-4 h-4 accent-[#7c3aed]"
+            className="w-4 h-4 accent-[#7c3aed] mt-3 sm:mt-0 flex-shrink-0"
           />
-          {/* Key input */}
-          <input
-            value={pair.key}
-            onChange={e => updateRow(i, 'key', e.target.value)}
-            placeholder={placeholder}
-            className="input-field flex-1 text-sm font-mono"
-          />
-          {/* Value input */}
-          <input
-            value={pair.value}
-            onChange={e => updateRow(i, 'value', e.target.value)}
-            placeholder="Value"
-            className="input-field flex-1 text-sm font-mono"
-          />
-          {/* Remove row */}
-          <button
-            onClick={() => removeRow(i)}
-            className="text-[#545a7a] hover:text-[#f87171] transition-colors px-2 text-lg"
-          >
-            ✕
-          </button>
+          {/* Key + Value row — side by side even on mobile */}
+          <div className="flex gap-2 flex-1 min-w-0 w-full">
+            {/* Key input */}
+            <input
+              value={pair.key}
+              onChange={e => updateRow(i, 'key', e.target.value)}
+              placeholder={placeholder}
+              className="input-field flex-1 min-w-0 text-sm font-mono"
+            />
+            {/* Value input */}
+            <input
+              value={pair.value}
+              onChange={e => updateRow(i, 'value', e.target.value)}
+              placeholder="Value"
+              className="input-field flex-1 min-w-0 text-sm font-mono"
+            />
+            {/* Remove row */}
+            <button
+              onClick={() => removeRow(i)}
+              className="text-[#545a7a] hover:text-[#f87171] transition-colors px-2 text-lg flex-shrink-0"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       ))}
 
