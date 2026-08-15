@@ -88,12 +88,22 @@ const initializeSocketServer = (io) => {
 
     // === EVENT: Cursor Position Update ===
     socket.on('cursor:move', ({ roomId, position, selection }) => {
+      // Bug fix: include the user's color so remote cursors render correctly
+      const user = rooms.get(roomId)?.users.get(socket.id);
       socket.to(roomId).emit('cursor:update', {
         socketId: socket.id,
         userId: socket.user.id,
         position,
         selection,
+        color: user?.color,
       });
+    });
+
+    // === EVENT: Leave Room (explicit, e.g. "Leave" button / page unmount) ===
+    socket.on('room:leave', ({ roomId }) => {
+      if (!roomId || !socket.rooms.has(roomId)) return;
+      socket.leave(roomId);
+      handleUserLeave(io, socket, roomId);
     });
 
     // === EVENT: Disconnect ===
