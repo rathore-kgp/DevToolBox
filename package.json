@@ -1,19 +1,11 @@
 {
   "name": "web_based_dev_tool_box",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Web-based developer toolbox — React client + Express server",
+  "private": true,
   "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.3.1",
-    "axios": "^1.17.0",
-    "mongodb": "^7.3.0",
-    "mongoose": "^9.7.0",
-    "react-redux": "^9.3.0",
-    "react-router-dom": "^7.17.0",
-    "redux": "^5.0.1",
-    "tailwindcss": "^4.3.1"
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "install:all": "npm install --prefix client && npm install --prefix server"
   }
 }
