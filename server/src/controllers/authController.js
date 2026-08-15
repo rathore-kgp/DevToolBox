@@ -23,7 +23,7 @@ const sendTokenResponse = async (user, statusCode, res) => {
         httpOnly: true,  //XSS protection
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict', //CSRF protection
-        maxAge: 7 * 24 * 60 * 60 * 100,  // 7 days in ms
+        maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days in ms
     };
 
     res
