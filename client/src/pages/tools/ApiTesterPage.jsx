@@ -81,29 +81,29 @@ const ApiTesterPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#f0e7ff]">API Tester</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#f0e7ff]">API Tester</h1>
           <p className="text-[#545a7a] text-sm mt-1">Send HTTP requests through our secure proxy</p>
         </div>
         <button
           onClick={() => setShowCollections(!showCollections)}
-          className="text-sm text-[#a06efd] hover:text-[#7c3aed] transition-colors border border-[#7c3aed]/30 px-3 py-1.5 rounded-lg"
+          className="self-start sm:self-auto text-sm text-[#a06efd] hover:text-[#7c3aed] transition-colors border border-[#7c3aed]/30 px-3 py-1.5 rounded-lg"
         >
           {showCollections ? 'Hide' : 'Show'} Collections
         </button>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col lg:flex-row gap-4">
         {/* ── Main Panel ── */}
         <div className="flex-1 space-y-3">
 
           {/* URL Bar */}
-          <div className="flex gap-2 p-4 rounded-2xl border border-[#1c1f2e] bg-[#0d0f17]/60">
+          <div className="flex flex-col sm:flex-row gap-2 p-4 rounded-2xl border border-[#1c1f2e] bg-[#0d0f17]/60">
             <select
               value={method}
               onChange={e => dispatch(setMethod(e.target.value))}
-              className={`bg-[#0d0f17] border border-[#2d3148] rounded-lg px-3 py-2 text-sm font-bold font-mono ${METHOD_COLORS[method]} focus:outline-none focus:border-[#7c3aed]`}
+              className={`bg-[#0d0f17] border border-[#2d3148] rounded-lg px-3 py-2 text-sm font-bold font-mono ${METHOD_COLORS[method]} focus:outline-none focus:border-[#7c3aed] w-full sm:w-auto`}
             >
               {METHODS.map(m => (
                 <option key={m} value={m}>{m}</option>
@@ -122,10 +122,10 @@ const ApiTesterPage = () => {
             <button
               onClick={handleSend}
               disabled={isLoading || !url}
-              className="px-5 py-2 bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors"
+              className="px-5 py-2 bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors w-full sm:w-auto"
             >
               {isLoading ? (
-                <span className="flex items-center gap-2">
+                <span className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
@@ -294,7 +294,7 @@ const ApiTesterPage = () => {
 
         {/* ── Collections Sidebar ── */}
         {showCollections && (
-          <div className="w-64 shrink-0 rounded-2xl border border-[#1c1f2e] bg-[#0d0f17]/60 p-4 space-y-3 h-fit">
+          <div className="w-full lg:w-64 shrink-0 rounded-2xl border border-[#1c1f2e] bg-[#0d0f17]/60 p-4 space-y-3 h-fit">
             <h3 className="text-sm font-semibold text-[#d8dbe8]">Collections</h3>
             {collections.length === 0 ? (
               <p className="text-xs text-[#545a7a] text-center py-4">
