@@ -39,6 +39,7 @@ const proxyRequest = async(req, res) => {
             headers : safeHeaders,
             data : ['GET', 'HEAD'].includes(upperMethod) ? undefined : body,
             timeout,
+            maxRedirects : 0, // SSRF fix: don't follow redirects — a public URL could 302 to a private IP, bypassing validateProxyTarget
             maxContentLength : MAX_RESPONSE_SIZE_BYTES,
             validateStatus : () => true,  // Don't throw on 4xx/5xx - return them to user
             responseType : 'text', 
