@@ -15,48 +15,62 @@ export const useCollabRoom = (roomId, username) => {
     // Join the room
     socket.emit('room:join', { roomId, username });
 
-    // Receive initial room state
-    socket.on('room:state', ({ document: doc, users: roomUsers }) => {
+    // Bug fix: Use named handler references so socket.off() removes ONLY our
+    // specific handler — not every listener on that event.
+    const onRoomState = ({ document: doc, users: roomUsers }) => {
       setDocument(doc);
       setUsers(roomUsers);
       setIsConnected(true);
-    });
+    };
 
-    // Another user's document update
-    socket.on('document:update', ({ content, socketId }) => {
+    const onDocumentUpdate = ({ content, socketId }) => {
       if (socketId !== socket.id) {
-        isLocalChange.current = true; // Flag so onChange doesn't re-broadcast
+        isLocalChange.current = true;
         setDocument(content);
       }
-    });
+    };
 
-    // User joined/left events
-    socket.on('room:user-joined', ({ users: roomUsers }) => setUsers(roomUsers));
-    socket.on('room:user-left', ({ users: roomUsers }) => {
+    const onUserJoined = ({ users: roomUsers }) => setUsers(roomUsers);
+
+    // Bug fix: Read the leaving user's socketId from the event payload and
+    // delete their cursor so it no longer lingers on screen.
+    const onUserLeft = ({ users: roomUsers, socketId: leftSocketId }) => {
       setUsers(roomUsers);
-      // Remove cursor for disconnected user
-      setRemoteCursors(prev => {
-        const updated = { ...prev };
-        // We'd need socketId from the event to delete — add it to the event payload
-        return updated;
-      });
-    });
+      if (leftSocketId) {
+        setRemoteCursors(prev => {
+          const updated = { ...prev };
+          delete updated[leftSocketId];
+          return updated;
+        });
+      }
+    };
 
-    // Remote cursor updates
-    socket.on('cursor:update', ({ socketId, position, color }) => {
+    const onCursorUpdate = ({ socketId, position, color }) => {
       setRemoteCursors(prev => ({ ...prev, [socketId]: { position, color } }));
-    });
+    };
+
+    socket.on('room:state',      onRoomState);
+    socket.on('document:update', onDocumentUpdate);
+    socket.on('room:user-joined', onUserJoined);
+    socket.on('room:user-left',  onUserLeft);
+    socket.on('cursor:update',   onCursorUpdate);
 
     return () => {
-      socket.off('room:state');
-      socket.off('document:update');
-      socket.off('room:user-joined');
-      socket.off('room:user-left');
-      socket.off('cursor:update');
+      // Pass the exact handler reference — only removes OUR listener
+      socket.off('room:state',      onRoomState);
+      socket.off('document:update', onDocumentUpdate);
+      socket.off('room:user-joined', onUserJoined);
+      socket.off('room:user-left',  onUserLeft);
+      socket.off('cursor:update',   onCursorUpdate);
+      socket.emit('room:leave', { roomId });
     };
   }, [socket, roomId, username]);
 
   const handleDocumentChange = useCallback((newContent) => {
+    // Bug fix: Monaco calls onChange(undefined) on initial mount — guard here
+    // to prevent broadcasting undefined and crashing docContent.length in the UI.
+    if (newContent === undefined || newContent === null) return;
+
     // If this change came from a remote update, don't re-broadcast
     if (isLocalChange.current) {
       isLocalChange.current = false;
