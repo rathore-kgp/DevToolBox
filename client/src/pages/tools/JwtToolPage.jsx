@@ -59,7 +59,7 @@ const JwtToolPage = () => {
             className="input-field font-mono text-sm h-28 resize-none"
             placeholder="Paste your JWT here..."
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button onClick={handleDecode} className="btn-primary text-sm">Decode (Client-Side)</button>
             <button onClick={() => setToken(SAMPLE_JWT)} className="btn-secondary text-sm">Load Sample</button>
           </div>
@@ -105,8 +105,8 @@ const JwtToolPage = () => {
         <div className="card space-y-3">
           <h3 className="font-semibold text-sm">Signature Verification (Server-Side)</h3>
           <p className="text-xs text-[#6e758f]">Your secret is sent to our backend over HTTPS and never logged or stored.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="md:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="sm:col-span-2">
               <input
                 type="text"
                 value={secret}
