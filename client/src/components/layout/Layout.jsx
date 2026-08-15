@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../store/slices/authSlice';
@@ -79,89 +80,164 @@ const NAV_ITEMS = [
   },
 ];
 
+const SidebarContent = ({ location, onNavClick, onLogout }) => (
+  <>
+    {/* Logo */}
+    <div className="px-5 py-6 border-b border-[#1c1f2e]">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#06b6d4] flex items-center justify-center shadow-lg shadow-[#7c3aed]/30 flex-shrink-0">
+          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
+        <div>
+          <h1 className="text-[15px] font-bold text-[#f0e7ff] tracking-tight leading-none">DevToolBox</h1>
+          <p className="text-[11px] text-[#545a7a] mt-0.5">Developer Utilities</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Navigation */}
+    <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <p className="px-3 py-1 text-[10px] font-semibold text-[#545a7a] uppercase tracking-widest mb-2">Menu</p>
+      {NAV_ITEMS.map(({ to, label, icon }) => {
+        const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
+        return (
+          <Link
+            key={to}
+            to={to}
+            onClick={onNavClick}
+            className={`nav-link ${isActive ? 'active' : ''}`}
+          >
+            <span className={isActive ? 'text-[#a06efd]' : 'text-[#545a7a]'}>{icon}</span>
+            {label}
+            {isActive && (
+              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#7c3aed]" />
+            )}
+          </Link>
+        );
+      })}
+    </nav>
+
+    {/* Bottom: logout */}
+    <div className="px-3 py-4 border-t border-[#1c1f2e]">
+      <button
+        onClick={onLogout}
+        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#6e758f] hover:text-[#f87171] hover:bg-[rgba(239,68,68,0.08)] transition-all duration-200 text-sm font-medium group"
+      >
+        <svg className="w-4 h-4 group-hover:text-[#f87171]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Sign out
+      </button>
+    </div>
+  </>
+);
+
 const Layout = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Close drawer on route change (mobile nav tap)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll when drawer is open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
     navigate('/login');
   };
 
+  const currentPage = location.pathname.replace('/', '') || 'dashboard';
+
   return (
     <div className="flex min-h-screen font-sans">
       {/* Mesh background */}
       <div className="mesh-bg" />
 
-      {/* ── Sidebar ── */}
-      <aside className="w-64 flex-shrink-0 flex flex-col border-r border-[#2d3148] bg-[#0d0f17]/80 backdrop-blur-xl animate-slide-in">
-        {/* Logo */}
-        <div className="px-5 py-6 border-b border-[#1c1f2e]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#06b6d4] flex items-center justify-center shadow-lg shadow-[#7c3aed]/30">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-[15px] font-bold text-[#f0e7ff] tracking-tight leading-none">DevToolBox</h1>
-              <p className="text-[11px] text-[#545a7a] mt-0.5">Developer Utilities</p>
-            </div>
-          </div>
-        </div>
+      {/* ── Mobile overlay backdrop ── */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-        {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          <p className="px-3 py-1 text-[10px] font-semibold text-[#545a7a] uppercase tracking-widest mb-2">Menu</p>
-          {NAV_ITEMS.map(({ to, label, icon }) => {
-            const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`nav-link ${isActive ? 'active' : ''}`}
-              >
-                <span className={isActive ? 'text-[#a06efd]' : 'text-[#545a7a]'}>{icon}</span>
-                {label}
-                {isActive && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#7c3aed]" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+      {/* ── Sidebar — desktop: static | mobile: fixed slide-in drawer ── */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full z-40 flex flex-col
+          w-72 lg:w-64
+          border-r border-[#2d3148] bg-[#0d0f17]/95 backdrop-blur-xl
+          transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0 lg:static lg:h-screen lg:flex-shrink-0
+          animate-slide-in
+        `}
+        aria-label="Sidebar navigation"
+      >
+        {/* Mobile close button inside drawer */}
+        <button
+          className="absolute top-4 right-4 lg:hidden p-1.5 rounded-lg text-[#545a7a] hover:text-[#d8dbe8] hover:bg-[#232638] transition-colors"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close menu"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-        {/* Bottom: user / logout */}
-        <div className="px-3 py-4 border-t border-[#1c1f2e]">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#6e758f] hover:text-[#f87171] hover:bg-[rgba(239,68,68,0.08)] transition-all duration-200 text-sm font-medium group"
-          >
-            <svg className="w-4 h-4 group-hover:text-[#f87171]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Sign out
-          </button>
-        </div>
+        <SidebarContent
+          location={location}
+          onNavClick={() => setSidebarOpen(false)}
+          onLogout={handleLogout}
+        />
       </aside>
 
       {/* ── Main content ── */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 lg:ml-0">
         {/* Top bar */}
-        <header className="h-14 flex items-center justify-between px-6 border-b border-[#1c1f2e] bg-[#0d0f17]/50 backdrop-blur-sm flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-[#545a7a] text-sm">/</span>
-            <span className="text-[#d8dbe8] text-sm font-medium capitalize">
-              {location.pathname.replace('/', '') || 'dashboard'}
-            </span>
+        <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b border-[#1c1f2e] bg-[#0d0f17]/50 backdrop-blur-sm flex-shrink-0 sticky top-0 z-20">
+          <div className="flex items-center gap-3">
+            {/* Hamburger — only visible on mobile */}
+            <button
+              className="lg:hidden p-2 rounded-lg text-[#545a7a] hover:text-[#d8dbe8] hover:bg-[#232638] transition-colors -ml-1"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#545a7a] text-sm hidden sm:block">/</span>
+              <span className="text-[#d8dbe8] text-sm font-medium capitalize truncate max-w-[140px] sm:max-w-none">
+                {currentPage}
+              </span>
+            </div>
           </div>
+
           <div className="flex items-center gap-2">
             <span className="badge badge-brand text-[11px]">v1.0</span>
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-6 animate-fade-in">
+        <div className="flex-1 overflow-auto p-4 lg:p-6 animate-fade-in">
           <Outlet />
         </div>
       </main>
