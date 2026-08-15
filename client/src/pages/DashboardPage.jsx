@@ -127,7 +127,7 @@ const DashboardPage = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
       {/* ─── Hero section ─── */}
-      <div className="relative overflow-hidden rounded-2xl p-8 border border-[#2d3148]"
+      <div className="relative overflow-hidden rounded-2xl p-5 sm:p-8 border border-[#2d3148]"
         style={{ background: 'linear-gradient(135deg, #161926 0%, #1c1f2e 60%, rgba(124,58,237,0.08) 100%)' }}>
         {/* Decorative orb */}
         <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-[#7c3aed]/10 blur-3xl pointer-events-none" />
@@ -139,7 +139,7 @@ const DashboardPage = () => {
             Developer Toolkit
           </div>
 
-          <h1 className="text-4xl font-bold gradient-text mb-3">
+          <h1 className="text-2xl sm:text-4xl font-bold gradient-text mb-3">
             Welcome to DevToolBox
           </h1>
           <p className="text-[#6e758f] text-lg max-w-xl leading-relaxed">
@@ -148,7 +148,7 @@ const DashboardPage = () => {
             backend proxy.
           </p>
 
-          <div className="flex items-center gap-6 mt-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-6">
             {STATS.map(({ label, value, suffix }) => (
               <div key={label} className="text-center">
                 <p className="text-2xl font-bold gradient-text">{value}<span className="text-[#a06efd]">{suffix}</span></p>
