@@ -328,3 +328,43 @@ select.input-field { cursor: pointer; }
     #0d0f17;
   pointer-events: none;
 }
+
+/* ─── Mobile responsive utilities ─── */
+
+/* Prevent iOS from zooming into inputs (requires font-size >= 16px on focus) */
+@media (max-width: 640px) {
+  .input-field {
+    font-size: 16px;
+  }
+
+  /* Reduce card padding on small screens */
+  .card {
+    padding: 16px;
+  }
+
+  /* Allow tab-nav to scroll horizontally on mobile instead of overflowing */
+  .tab-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  /* Shrink tab buttons slightly on mobile */
+  .tab-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  /* Shrink btn-primary/secondary on very small screens */
+  .btn-primary,
+  .btn-secondary {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* Ensure textareas don't get too tall on mobile */
+  textarea.input-field {
+    min-height: 80px;
+  }
+}
