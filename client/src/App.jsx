@@ -7,6 +7,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import { checkAuth } from './store/slices/authSlice';
+import { SocketProvider } from './context/SocketContext';
 
 // Lazy loaded pages — code splitting starts here
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -96,7 +97,9 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
-      <AppContent />
+      <SocketProvider>
+        <AppContent />
+      </SocketProvider>
     </Provider>
   );
 }
