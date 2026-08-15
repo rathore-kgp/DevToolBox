@@ -16,7 +16,7 @@ const startServer = async () => {
 
     const io = new Server(httpServer, {
         cors: {
-        origin: process.env.CLIENT_ORIGIN || 'http://localhost:3000',
+        origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
         methods: ['GET', 'POST'],
         credentials: true,
         },
@@ -33,11 +33,12 @@ const startServer = async () => {
     //Graceful shutdown
     process.on('SIGTERM', () => {
         console.log('SIGTERM received. Shutting down gracefully....');
-        server.close(() => {
-            mongoose.connection.close(false, () => {
-                console.log('MongoDB connection closed.');
-                process.exit(0);
-            });
+        httpServer.close(async () => {
+            // Bug fix: Mongoose 7+ removed callback support — close() returns a Promise
+            const mongoose = require('mongoose');
+            await mongoose.connection.close();
+            console.log('MongoDB connection closed.');
+            process.exit(0);
         });
     });
 };
