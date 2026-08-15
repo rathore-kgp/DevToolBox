@@ -36,12 +36,14 @@ const CodeRoomPage = () => {
   const [roomId, setRoomId] = useState('');
   const [inputRoomId, setInputRoomId] = useState('');
   const [language, setLanguage] = useState('javascript');
-  const [connectionStatus, setConnectionStatus] = useState('connecting');
+  const socket = useSocket();
+  const [connectionStatus, setConnectionStatus] = useState(
+    socket?.connected ? 'connected' : 'connecting'
+  );
   const [socketError, setSocketError] = useState(null);
 
   const currentUser = useSelector(selectCurrentUser);
   const { isDark } = useTheme();
-  const socket = useSocket();
 
   const {
     // Bug 5 fix: renamed from `document` to `docContent` to avoid shadowing the
@@ -57,6 +59,10 @@ const CodeRoomPage = () => {
   useEffect(() => {
     if (!socket) return;
 
+    if (socket.connected) {
+      setConnectionStatus('connected');
+    }
+
     const onConnect = () => {
       setConnectionStatus('connected');
       setSocketError(null);
@@ -70,14 +76,16 @@ const CodeRoomPage = () => {
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('reconnecting', onReconnecting);
+    // Bug fix: Socket.io v4 emits reconnection events on the Manager (socket.io),
+    // not on the socket itself — socket.on('reconnecting') never fires.
+    socket.io.on('reconnect_attempt', onReconnecting);
     socket.on('connect_error', onConnectError);
 
     // Cleanup: remove exactly the handlers we added, not all listeners
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('reconnecting', onReconnecting);
+      socket.io.off('reconnect_attempt', onReconnecting);
       socket.off('connect_error', onConnectError);
     };
   }, [socket]);
@@ -238,8 +246,8 @@ const CodeRoomPage = () => {
       <div className="px-4 py-1.5 border-t border-[#1c1f2e] bg-[#0d0f17]/80 text-xs text-[#545a7a] flex justify-between">
         <span>Last-write-wins sync · Changes auto-saved to room</span>
         <div className="flex items-center gap-4">
-          {/* Bug 5 fix: was document.length — now uses renamed docContent */}
-          <span>{docContent.length} chars</span>
+          {/* Bug fix: nullish fallback guards against undefined on Monaco mount */}
+          <span>{(docContent ?? '').length} chars</span>
           <button
             onClick={() => navigator.clipboard.writeText(docContent)}
             className="text-[#a06efd] hover:text-[#7c3aed] hover:underline transition-colors"
