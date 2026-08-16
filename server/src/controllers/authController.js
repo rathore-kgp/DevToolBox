@@ -19,10 +19,13 @@ const sendTokenResponse = async (user, statusCode, res) => {
 
     await user.save({ validateBeforeSave: false });
 
+    const isProd = process.env.NODE_ENV === 'production';
     const cookieOptions = {
         httpOnly: true,  //XSS protection
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict', //CSRF protection
+        secure: isProd, // required when sameSite is 'none'
+        // 'strict' blocks the cookie entirely when frontend (Vercel) and
+        // backend (Render) are different domains — must be 'none' in prod.
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days in ms
     };
 
@@ -144,8 +147,14 @@ const logout = async (req, res) => {
         }
     }
 
-    //Clear the cookie
-    res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
+    //Clear the cookie (attributes must match how it was set, or browsers won't clear it)
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('refreshToken', '', {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        expires: new Date(0),
+    });
     res.json({
         success: true,
         message: 'Logged out successfully.'
