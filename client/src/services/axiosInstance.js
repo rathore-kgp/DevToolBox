@@ -5,7 +5,10 @@ import { setCredentials, clearAuth } from '../store/slices/authSlice';
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   withCredentials: true, // Required for HttpOnly cookies (refresh token)
-  timeout: 10000,
+  // Render free tier spins down after inactivity; a cold start can take
+  // 30-50s to respond. 60s gives enough headroom before we treat it as
+  // a genuine failure instead of erroring out mid-wake-up.
+  timeout: 60000,
 });
 
 // REQUEST INTERCEPTOR: Attach access token

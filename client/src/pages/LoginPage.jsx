@@ -6,6 +6,7 @@ import { loginUser, selectAuthLoading, selectAuthError, clearError } from '../st
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [showWakeUpHint, setShowWakeUpHint] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +18,18 @@ const LoginPage = () => {
   useEffect(() => {
     dispatch(clearError());
   }, [dispatch]);
+
+  // Backend is on Render's free tier and sleeps after inactivity — the
+  // first request after a while can take 30-50s. If loading drags on,
+  // let the user know it's not stuck.
+  useEffect(() => {
+    if (!isLoading) {
+      setShowWakeUpHint(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowWakeUpHint(true), 4000);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -131,10 +144,15 @@ const LoginPage = () => {
               {isLoading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in…
+                  {showWakeUpHint ? 'Waking up server…' : 'Signing in…'}
                 </>
               ) : 'Sign In'}
             </button>
+            {isLoading && showWakeUpHint && (
+              <p className="text-center text-xs text-[#6e758f] -mt-2">
+                First request after inactivity can take up to a minute. Hang tight…
+              </p>
+            )}
           </form>
 
           <div className="mt-6 pt-5 border-t border-[#1c1f2e] text-center">
