@@ -33,14 +33,14 @@ const validateProxyTarget = async (url) => {
         throw new Error('Invalid URL format.');
     }
 
-    //Block non-HTTP protocols 
+    //Block non-HTTP protocols
     if(!['http:', 'https:'].includes(parsed.protocol)){
         throw new Error(`Protocol "${parsed.protocol}" is not allowed. Only HTTP and HTTPS are permitted.`);
     }
 
     const hostname = parsed.hostname;
 
-    //Block directly named private hosts 
+    //Block directly named private hosts
     if(BLOCKED_HOSTS.has(hostname.toLowerCase())) {
         throw new Error(`Requests to "${hostname}" are not allowed.`);
     }
@@ -50,24 +50,35 @@ const validateProxyTarget = async (url) => {
         if(isPrivateIP(hostname)) {
             throw new Error('Requests to private IP addresses are not allowed.');
         }
-        return; //IP is public - allow
+        // Pin: the request must connect to this exact IP, nothing else to resolve.
+        return { hostname, addresses: [{ address: hostname, family: isIP(hostname) }] };
     }
 
     //DNS resolve and check resulting IP
+    let addresses;
     try{
-        const addresses = await dns.lookup(hostname, { all : true });
-        for(const { address } of addresses) {
-            if(isPrivateIP(address)) {
-                throw new Error(`Domain "${hostname} resolves to a private IP address.`);
-            }
-        }
+        addresses = await dns.lookup(hostname, { all : true });
     }
-    catch(e) {
-        if(e.message.includes('private IP')) throw e;
+    catch {
         throw new Error(`Could not resolve hostname: ${hostname}`);
     }
 
-    
+    if (addresses.length === 0) {
+        throw new Error(`Could not resolve hostname: ${hostname}`);
+    }
+
+    for(const { address } of addresses) {
+        if(isPrivateIP(address)) {
+            throw new Error(`Domain "${hostname}" resolves to a private IP address.`);
+        }
+    }
+
+    // Return the exact addresses we just validated. The caller pins the
+    // outgoing request to these IPs (via a custom DNS lookup) so a second,
+    // independent resolution at request time can't be rebound to a private
+    // IP in the window between this check and the actual request
+    // (DNS-rebinding / TOCTOU).
+    return { hostname, addresses };
 };
 
 module.exports = { validateProxyTarget };

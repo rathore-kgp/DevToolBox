@@ -4,6 +4,16 @@ const jwt = require('jsonwebtoken');
 // Structure: { roomId: { users: Map<socketId, userInfo>, document: string } }
 const rooms = new Map();
 
+// Hard cap on concurrent users per room — this was previously UI-only text
+// ("up to 10 users per room"), not enforced server-side, so any client
+// could flood a room with unlimited socket connections.
+const MAX_ROOM_USERS = 10;
+
+// Cap how large a document broadcast can be — an unbounded `content` string
+// gets rebroadcast to every user in the room on every keystroke, so a
+// malicious/scripted client could otherwise use it as a bandwidth amplifier.
+const MAX_DOCUMENT_BYTES = 2 * 1024 * 1024; // 2MB
+
 const getOrCreateRoom = (roomId) => {
   if (!rooms.has(roomId)) {
     rooms.set(roomId, {
@@ -42,9 +52,16 @@ const initializeSocketServer = (io) => {
         handleUserLeave(io, socket, room);
       });
 
+      const room = getOrCreateRoom(roomId);
+
+      // Enforce the room capacity server-side (was previously UI text only).
+      if (room.users.size >= MAX_ROOM_USERS) {
+        socket.emit('room:full', { roomId, max: MAX_ROOM_USERS });
+        return;
+      }
+
       socket.join(roomId);
 
-      const room = getOrCreateRoom(roomId);
       room.users.set(socket.id, {
         socketId: socket.id,
         userId: socket.user.id,
@@ -72,6 +89,13 @@ const initializeSocketServer = (io) => {
     socket.on('document:change', ({ roomId, content, cursorPosition }) => {
       const room = rooms.get(roomId);
       if (!room) return;
+
+      // Reject oversized documents instead of broadcasting them to every
+      // user in the room on every keystroke (bandwidth amplification).
+      if (typeof content !== 'string' || Buffer.byteLength(content, 'utf8') > MAX_DOCUMENT_BYTES) {
+        socket.emit('document:rejected', { reason: 'Document too large.' });
+        return;
+      }
 
       // Update server-side document state
       room.document = content;

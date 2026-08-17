@@ -7,6 +7,7 @@ export const useCollabRoom = (roomId, username) => {
   const [users, setUsers] = useState([]);
   const [remoteCursors, setRemoteCursors] = useState({});
   const [isConnected, setIsConnected] = useState(false);
+  const [joinError, setJoinError] = useState(null);
   const isLocalChange = useRef(false); // Prevent echo handling
 
   useEffect(() => {
@@ -49,11 +50,23 @@ export const useCollabRoom = (roomId, username) => {
       setRemoteCursors(prev => ({ ...prev, [socketId]: { position, color } }));
     };
 
+    // Server rejects the join once a room hits its user cap — surface it
+    // instead of silently doing nothing (previously unhandled).
+    const onRoomFull = ({ max }) => {
+      setJoinError(`This room is full (max ${max} users). Try another Room ID.`);
+    };
+
+    const onDocumentRejected = ({ reason }) => {
+      setJoinError(reason || 'That change was rejected by the server.');
+    };
+
     socket.on('room:state',      onRoomState);
     socket.on('document:update', onDocumentUpdate);
     socket.on('room:user-joined', onUserJoined);
     socket.on('room:user-left',  onUserLeft);
     socket.on('cursor:update',   onCursorUpdate);
+    socket.on('room:full',       onRoomFull);
+    socket.on('document:rejected', onDocumentRejected);
 
     return () => {
       // Pass the exact handler reference — only removes OUR listener
@@ -62,6 +75,8 @@ export const useCollabRoom = (roomId, username) => {
       socket.off('room:user-joined', onUserJoined);
       socket.off('room:user-left',  onUserLeft);
       socket.off('cursor:update',   onCursorUpdate);
+      socket.off('room:full',       onRoomFull);
+      socket.off('document:rejected', onDocumentRejected);
       socket.emit('room:leave', { roomId });
     };
   }, [socket, roomId, username]);
@@ -89,6 +104,7 @@ export const useCollabRoom = (roomId, username) => {
     users,
     remoteCursors,
     isConnected,
+    joinError,
     handleDocumentChange,
     handleCursorMove,
   };

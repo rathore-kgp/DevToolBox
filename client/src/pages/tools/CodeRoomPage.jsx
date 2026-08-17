@@ -50,6 +50,7 @@ const CodeRoomPage = () => {
     // global window.document object, which would break useTheme & any other DOM calls.
     document: docContent,
     users,
+    joinError,
     handleDocumentChange,
     handleCursorMove,
   } = useCollabRoom(roomId, currentUser?.username);
@@ -154,9 +155,9 @@ const CodeRoomPage = () => {
     <div className="flex flex-col h-[calc(100vh-8rem)] rounded-2xl border border-[#1c1f2e] overflow-hidden">
 
       {/* Socket Error Banner — Bug 4 fix: was bg-red-50 dark:bg-red-900/20 */}
-      {socketError && (
+      {(socketError || joinError) && (
         <div className="px-4 py-2 bg-[rgba(239,68,68,0.08)] border-b border-[rgba(239,68,68,0.2)] text-[#f87171] text-sm">
-          {socketError}
+          {socketError || joinError}
         </div>
       )}
 

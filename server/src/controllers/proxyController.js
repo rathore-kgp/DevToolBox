@@ -20,8 +20,22 @@ const proxyRequest = async(req, res) => {
         throw err;
     }
 
-    // SSRF check - throws if URL is private 
-    await validateProxyTarget(url);
+    // SSRF check - throws if URL is private. Returns the exact IP(s) we
+    // just validated so the actual request can be pinned to them below.
+    const { addresses } = await validateProxyTarget(url);
+
+    // Pin DNS resolution to the address(es) we just validated. Without this,
+    // axios/Node would re-resolve the hostname independently when making the
+    // request — if the DNS record has a very short TTL, that second lookup
+    // could return a different (private) IP than the one we just checked
+    // (DNS-rebinding). Forcing the same resolved IP closes that gap.
+    const pinnedLookup = (hostname, options, callback) => {
+        const chosen = addresses[0];
+        if (options?.all) {
+            return callback(null, addresses.map(a => ({ address: a.address, family: a.family })));
+        }
+        callback(null, chosen.address, chosen.family);
+    };
 
     //Strip hop-by-hop headers that shouldn't be forwaded
     const safeHeaders = { ...headers };
@@ -42,7 +56,8 @@ const proxyRequest = async(req, res) => {
             maxRedirects : 0, // SSRF fix: don't follow redirects — a public URL could 302 to a private IP, bypassing validateProxyTarget
             maxContentLength : MAX_RESPONSE_SIZE_BYTES,
             validateStatus : () => true,  // Don't throw on 4xx/5xx - return them to user
-            responseType : 'text', 
+            responseType : 'text',
+            lookup : pinnedLookup, // SSRF fix: pin DNS to the pre-validated IP (prevents DNS-rebinding TOCTOU)
         });
         
         const duration = Date.now() - startTime;
