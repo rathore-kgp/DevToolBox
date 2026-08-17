@@ -107,7 +107,12 @@ const EncodingToolsPage = () => {
   };
 
   const handleGenerateUUIDs = () => {
-    const newUuids = Array.from({ length: uuidCount }, generateUUID);
+    // The <input min/max> attributes are cosmetic only — the browser
+    // doesn't stop JS from reading an out-of-range value. Clamp here too,
+    // otherwise a value like 999999 tries to render that many DOM nodes
+    // and freezes the tab.
+    const safeCount = Math.min(5000, Math.max(1, Math.floor(uuidCount) || 1));
+    const newUuids = Array.from({ length: safeCount }, generateUUID);
     setUuids(newUuids);
   };
 
@@ -251,12 +256,18 @@ const EncodingToolsPage = () => {
         <div className="card space-y-5 animate-fade-in">
           <div className="flex gap-4 items-end flex-wrap">
             <div>
-              <label className="block text-xs font-medium text-[#6e758f] mb-1.5">Count (1–100)</label>
+              <label className="block text-xs font-medium text-[#6e758f] mb-1.5">Count (1–5000)</label>
               <input
                 type="number"
-                min="1" max="100"
+                min="1" max="5000"
                 value={uuidCount}
-                onChange={e => setUuidCount(Number(e.target.value))}
+                onChange={e => {
+                  const raw = Number(e.target.value);
+                  const clamped = Number.isFinite(raw)
+                    ? Math.min(5000, Math.max(1, Math.floor(raw)))
+                    : 1;
+                  setUuidCount(clamped);
+                }}
                 className="input-field w-24"
               />
             </div>
