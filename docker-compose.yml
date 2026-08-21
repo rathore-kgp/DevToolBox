@@ -1,0 +1,49 @@
+# docker-compose is the "conductor": instead of typing out long `docker
+# build` / `docker run` commands by hand for two separate containers and
+# remembering how they should talk to each other, we describe the whole
+# setup declaratively here, once, and run it with a single command.
+#
+# (Your Compose version is v5.5.0 — modern enough that the old top-level
+# "version: '3.8'" key you'll see in older tutorials is unnecessary; it's
+# deprecated and Compose ignores it now.)
+
+services:
+
+  # ── Backend: Node/Express/Socket.io API ────────────────────────────────
+  server:
+    build:
+      context: ./server        # look for a Dockerfile inside ./server
+    container_name: devtoolbox-server
+    env_file:
+      - ./server/.env           # inject your existing secrets at runtime
+    ports:
+      - "5000:5000"              # HOST:CONTAINER — reach it at localhost:5000
+    restart: unless-stopped
+
+  # ── Frontend: React/Vite, built and served by nginx ────────────────────
+  client:
+    build:
+      context: ./client
+      args:
+        # Passed in at IMAGE BUILD time (see client/Dockerfile for why).
+        # http://localhost:5000/api is correct here specifically because
+        # this code runs in YOUR BROWSER, not inside Docker's internal
+        # network — the browser only knows about ports published to your
+        # host machine ("localhost:5000" below), never Docker-internal
+        # service names like "server".
+        VITE_API_URL: http://localhost:5000/api
+    container_name: devtoolbox-client
+    ports:
+      - "5173:80"                # host 5173 -> nginx's port 80 in the container
+    depends_on:
+      - server                   # start server first (see note below)
+    restart: unless-stopped
+
+# Note on depends_on: this only waits for the server CONTAINER to start,
+# not for Express to finish connecting to MongoDB Atlas and be ready for
+# requests. That's fine here — the client is just static files; if a
+# request to the API fires before the server's fully warmed up, axios
+# will simply get a connection error and (per your code) can retry. For
+# stricter startup ordering you'd add a "healthcheck" + "condition:
+# service_healthy", but that's a refinement for later, not needed to get
+# this running.

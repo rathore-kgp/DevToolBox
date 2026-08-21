@@ -1,0 +1,24 @@
+# Files listed here are never sent to the Docker build at all — Docker
+# can't accidentally COPY them into the image even if a wildcard like
+# "COPY . ." would otherwise include them.
+
+# Never installed locally then shipped — we run "npm ci" INSIDE the image,
+# so a node_modules built on your Windows/WSL machine (or with different
+# native bindings) would be wrong Linux binaries anyway.
+node_modules
+
+# CRITICAL: your .env holds real secrets (Mongo Atlas password, JWT
+# signing keys). If this got copied into the image, it would be baked into
+# an image layer permanently — anyone who later pulls or inspects that
+# image (e.g. if you ever push it to Docker Hub) could extract it, even
+# after you "delete" the file, because old layers stay in the image
+# history. Secrets get injected at container START-UP instead, via
+# docker-compose's env_file — never baked in at BUILD time.
+.env
+.env.*
+
+npm-debug.log*
+*.log
+.git
+.gitignore
+README.md
